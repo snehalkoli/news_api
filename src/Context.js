@@ -11,7 +11,7 @@ const initialstate = {
   query: "CSS",
   nbPages: 0,
   page: 0,
-  hits: []
+  hits: [],
 };
 const AppContext = React.createContext();
 const AppProvider = ({ children }) => {
@@ -28,19 +28,42 @@ const AppProvider = ({ children }) => {
         type: "GET_STORIES",
         payload: {
           hits: data.hits,
-          nbPages: data.nbPages
-        }
+          nbPages: data.nbPages,
+        },
       });
       // isLoading=false;
     } catch (error) {
       console.log(error);
     }
   };
+  const removePost = (post_ID) => {
+    dispatch({ type: "REMOVE_POST", payload: post_ID });
+  };
+
+  const searchPost = (searchQuery) => {
+    dispatch({ type: "SEARCH_QUERY", payload: searchQuery });
+  };
+  const getNextPage = () => {
+    dispatch({
+      type: "NEXT_PAGE",
+    });
+  };
+
+  const getPrevPage = () => {
+    dispatch({
+      type: "PREV_PAGE",
+    });
+  };
   useEffect(() => {
     fetchApiData(`${API}query=${state.query} &page=${state.page}`);
-  }, []);
+  }, [state.query,state.page]);
+
   return (
-    <AppContext.Provider value={{ ...state }}>{children}</AppContext.Provider>
+    <AppContext.Provider
+      value={{ ...state, removePost, searchPost, getNextPage, getPrevPage }}
+    >
+      {children}
+    </AppContext.Provider>
   );
 };
 const useGlobalContext = () => {
